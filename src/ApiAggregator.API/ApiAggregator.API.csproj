@@ -11,4 +11,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ApiAggregator.Core\ApiAggregator.Core.csproj" />
+    <ProjectReference Include="..\ApiAggregator.Infrastructure\ApiAggregator.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
