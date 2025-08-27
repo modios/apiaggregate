@@ -4,5 +4,5 @@ using ApiAggregator.Core.DTOs;
 
 public interface IHackerNewsService
 {
-    Task<HackerNewsItem?> GetItemByIdAsync(int id);
+    Task<HackerNewsItem> GetItemByIdAsync(int id);
 }

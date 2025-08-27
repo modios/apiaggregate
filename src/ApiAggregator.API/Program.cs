@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<IOpenMeteoService, OpenMeteoService>();
 builder.Services.AddHttpClient<IHackerNewsService, HackerNewsService>();
 builder.Services.AddHttpClient<IWorldBankCountryService, WorldBankCountryService>();
+builder.Services.AddScoped<IAggregationService, AggregationService>();
 
 var app = builder.Build();
 
