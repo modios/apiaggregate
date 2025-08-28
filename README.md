@@ -85,5 +85,7 @@ GET https://localhost:7145/api/Aggregation?city=Athens&hackerNewsItemId=1213&cou
 ---
 
 ---
+## Use Visual Studio to run project
+
 You can run using Visual Studio and try the APIs on ```http https://localhost:7145/swagger/index.html```
 ---
