@@ -1,7 +1,9 @@
-﻿using ApiAggregator.Core.DTOs;
+﻿public record AggregatedResponse
+{
+    public List<AggregatedItem> Items { get; set; }
 
-public record AggregatedResponse(
-    WeatherInfo Weather,
-    HackerNewsItem HackerNewsItem,
-    WorldBankCountry WorldBankCountry
-);
+    public AggregatedResponse(List<AggregatedItem> items)
+    {
+        Items = items;
+    }
+}

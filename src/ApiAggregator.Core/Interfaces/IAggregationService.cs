@@ -1,6 +1,8 @@
-﻿namespace ApiAggregator.Core.Interfaces;
+﻿using ApiAggregator.Core.DTOs;
+
+namespace ApiAggregator.Core.Interfaces;
 
 public interface IAggregationService
 {
-    Task<AggregatedResponse> GetAggregatedDataAsync(string city, int hackerNewsItemId, string countryCode);
+    Task<AggregatedResponse> GetAggregatedDataAsync(AggregationRequest request);
 }

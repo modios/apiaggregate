@@ -21,7 +21,6 @@ public class HackerNewsService : IHackerNewsService
         if (!response.IsSuccessStatusCode)
             return null;
 
-        // Step 1: Deserialize the outer string
         string rawJson = await response.Content.ReadAsStringAsync();
         var item = JsonSerializer.Deserialize<HackerNewsItem>(rawJson);
         return item;

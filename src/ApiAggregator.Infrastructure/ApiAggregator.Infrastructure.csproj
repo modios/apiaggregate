@@ -14,4 +14,8 @@
     <ProjectReference Include="..\ApiAggregator.Core\ApiAggregator.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

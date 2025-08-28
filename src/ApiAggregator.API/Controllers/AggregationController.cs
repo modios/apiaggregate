@@ -1,4 +1,5 @@
-﻿using ApiAggregator.Core.Interfaces;
+﻿using ApiAggregator.Core.DTOs;
+using ApiAggregator.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -12,16 +13,20 @@ public class AggregationController : ControllerBase
         _aggregationService = aggregationService;
     }
 
+    /// <summary>
+    /// Retrieves aggregated data from multiple external APIs.
+    /// </summary>
+    /// <param name="city">City name for weather data.</param>
+    /// <param name="hackerNewsItemId">Item ID from Hacker News.</param>
+    /// <param name="countryCode">Country code for news data.</param>
+    /// <returns>Aggregated data response.</returns>
     [HttpGet]
-    public async Task<ActionResult<AggregatedResponse>> GetAggregated(
-        [FromQuery] string city,
-        [FromQuery] int hackerNewsItemId,
-        [FromQuery] string countryCode)
+    public async Task<ActionResult<AggregatedResponse>> GetAggregated([FromQuery] AggregationRequest request)
     {
-        if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(countryCode))
+        if (string.IsNullOrWhiteSpace(request.City) || string.IsNullOrWhiteSpace(request.CountryCode))
             return BadRequest("City and countryCode are required.");
 
-        var result = await _aggregationService.GetAggregatedDataAsync(city, hackerNewsItemId, countryCode);
+        var result = await _aggregationService.GetAggregatedDataAsync(request);
         return Ok(result);
     }
 }
