@@ -91,5 +91,3 @@ https://localhost:7145/swagger/index.html
 > 💡 The Swagger interface provides a convenient way to interact with the `/api/Aggregation` endpoint and view live responses.
 
 ---
-
-```
