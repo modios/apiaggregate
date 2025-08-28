@@ -26,17 +26,16 @@ Retrieves weather info, a Hacker News item, and country metadata in one call.
 | `city`             | string | ✅       | City name for weather lookup                                               |
 | `hackerNewsItemId` | int    | ✅       | Hacker News item ID                                                        |
 | `countryCode`      | string | ✅       | ISO 2-letter country code (e.g. `GR`)                                      |
-| `sortBy`           | string | ❌       | Optional. Sort response by `temperature`, `score`, or `incomeLevel`        |
-| `filterBy`         | string | ❌       | Optional. Filter response by `region`, `incomeLevel`, or `weatherCondition`|
-
-> 🧠 Sorting and filtering are applied only to the relevant sections of the response. For example, `sortBy=score` affects the Hacker News item, while `filterBy=region` affects the country metadata.
+| `sortBy`           | string | ❌       | Optional. Sort response by `date`                                          |
+| `sortOrder`        | string | ❌       | Optional. Sort direction: asc or desc                                      |
+| `filterBy`         | string | ❌       | Optional. Filter response by Category : Environment, Comment, Economy      |
 
 ---
 
 ### 📘 Example Request
 
 ```http
-GET https://localhost:7145/api/Aggregation?city=Athens&hackerNewsItemId=1213&countryCode=GR&sortBy=temperature&filterBy=region:Europe & Central Asia
+GET  https://localhost:7145/api/Aggregation?City=Athens&CountryCode=GR&HackerNewsItemId=1312&Category=Comment
 ```
 
 ---
@@ -45,34 +44,23 @@ GET https://localhost:7145/api/Aggregation?city=Athens&hackerNewsItemId=1213&cou
 
 ```json
 {
-  "weather": {
-    "city": "Athens",
-    "description": "Clear sky",
-    "temperature": 28.7,
-    "windSpeed": 12.3,
-    "humidity": 42
-  },
-  "hackerNewsItem": {
-    "id": 1213,
-    "by": "pg",
-    "title": "Lisp as the Language of the Future",
-    "text": "Lisp has been around for decades...",
-    "type": "story",
-    "score": 57,
-    "time": 1175714200
-  },
-  "worldBankCountry": {
-    "id": "GRC",
-    "iso2Code": "GR",
-    "name": "Greece",
-    "region": "Europe & Central Asia",
-    "adminRegion": "",
-    "incomeLevel": "High income",
-    "lendingType": "IBRD",
-    "capitalCity": "Athens",
-    "latitude": 37.9838,
-    "longitude": 23.7275
-  }
+  "items": [
+    {
+      "source": "HackerNews",
+      "category": "Comment",
+      "date": "2007-02-27T01:48:57Z",
+      "rawData": {
+        "by": "Alex3917",
+        "id": 1312,
+        "parent": 1245,
+        "text": "In theory couldn&#39;t one ban any OpenID below a certain pagerank? For example, my OpenID is embedded on my homepage, which has a pagerank of 6. So then could I create a Reddit clone and ban anyone with an OpenID coming from a site with a pagerank of below 4? You would probably have to accept only OpenID&#39;s from the header of index.html, and check to make sure there was only one OpenID per page. That way if you got banned for trolling then you&#39;d have to make a new homepage and get it up to a certain pagerank before you could make a new account at the site.",
+        "time": 1172548137,
+        "type": "comment",
+        "createdAt": "2007-02-27T01:48:57Z",
+        "category": "Comment"
+      }
+    }
+  ]
 }
 ```
 
