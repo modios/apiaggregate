@@ -1,5 +1,3 @@
-Absolutely, Anastasios! Here's your updated `README.md` with **sort** and **filter** capabilities added to the `/api/Aggregation` endpoint. I’ve preserved your clean structure and added enhancements that match your API’s style and clarity.
-
 ---
 
 ```markdown
