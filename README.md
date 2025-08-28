@@ -83,3 +83,7 @@ GET https://localhost:7145/api/Aggregation?city=Athens&hackerNewsItemId=1213&cou
 - `AggregationController` → Exposes the `/api/Aggregation` endpoint
 
 ---
+
+---
+You can run using Visual Studio and try the APIs on https://localhost:7145/swagger/index.html
+---
