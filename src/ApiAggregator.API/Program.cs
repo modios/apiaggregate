@@ -29,7 +29,7 @@ builder.Services.AddHttpClient<IOpenMeteoService, OpenMeteoService>().AddPolicyH
 builder.Services.AddHttpClient<IHackerNewsService, HackerNewsService>().AddPolicyHandler(resiliencePolicy); ;
 builder.Services.AddHttpClient<IWorldBankCountryService, WorldBankCountryService>().AddPolicyHandler(resiliencePolicy);
 builder.Services.AddScoped<IAggregationService, AggregationService>();
-
+builder.Services.AddMemoryCache();
 
 builder.Services.AddRateLimiter(options =>
 {

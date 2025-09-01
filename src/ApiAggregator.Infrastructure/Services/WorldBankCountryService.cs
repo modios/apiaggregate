@@ -2,20 +2,33 @@
 using ApiAggregator.Core.Interfaces;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
+
+namespace ApiAggregator.Infrastructure.Services;
 
 public class WorldBankCountryService : IWorldBankCountryService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<WorldBankCountryService> _logger;
+    private readonly IMemoryCache _cache;
 
-    public WorldBankCountryService(HttpClient httpClient, ILogger<WorldBankCountryService> logger)
+    public WorldBankCountryService(HttpClient httpClient, ILogger<WorldBankCountryService> logger, IMemoryCache cache)
     {
         _httpClient = httpClient;
         _logger = logger;
+        _cache = cache;
     }
 
     public async Task<WorldBankCountry> GetCountryAsync(string iso2Code)
     {
+        string cacheKey = $"worldbank:country:{iso2Code.ToUpperInvariant()}";
+
+        if (_cache.TryGetValue(cacheKey, out var cachedObj) && cachedObj is WorldBankCountry cachedCountry)
+        {
+            _logger.LogInformation("Returning cached World Bank country data for code {Iso2Code}", iso2Code);
+            return cachedCountry;
+        }
+
         var url = $"https://api.worldbank.org/v2/country/{iso2Code}?format=json";
 
         try
@@ -28,7 +41,7 @@ public class WorldBankCountryService : IWorldBankCountryService
 
             var countryElement = doc.RootElement[1][0];
 
-            return new WorldBankCountry(
+            var country = new WorldBankCountry(
                 Id: countryElement.GetProperty("id").GetString() ?? "",
                 Iso2Code: countryElement.GetProperty("iso2Code").GetString() ?? "",
                 Name: countryElement.GetProperty("name").GetString() ?? "",
@@ -40,6 +53,9 @@ public class WorldBankCountryService : IWorldBankCountryService
                 Latitude: double.Parse(countryElement.GetProperty("latitude").GetString() ?? "0"),
                 Longitude: double.Parse(countryElement.GetProperty("longitude").GetString() ?? "0")
             );
+
+            _cache.Set(cacheKey, country, TimeSpan.FromHours(1));
+            return country;
         }
         catch (HttpRequestException ex)
         {

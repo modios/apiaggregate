@@ -1,8 +1,9 @@
-﻿using System.Text.Json;
-using ApiAggregator.Core.DTOs;
-using ApiAggregator.Core.Interfaces;
+﻿using ApiAggregator.Core.DTOs;
 using ApiAggregator.Core.Helpers;
+using ApiAggregator.Core.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace ApiAggregator.Infrastructure.Services;
 
@@ -10,15 +11,25 @@ public class OpenMeteoService : IOpenMeteoService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<OpenMeteoService> _logger;
+    private readonly IMemoryCache _cache;
 
-    public OpenMeteoService(HttpClient httpClient, ILogger<OpenMeteoService> logger)
+    public OpenMeteoService(HttpClient httpClient, ILogger<OpenMeteoService> logger, IMemoryCache cache)
     {
         _httpClient = httpClient;
         _logger = logger;
+        _cache = cache;
     }
 
     public async Task<WeatherInfo> GetWeatherAsync(string city)
     {
+        string cacheKey = $"weather:{city}";
+
+        if (_cache.TryGetValue(cacheKey, out var cachedObj) && cachedObj is WeatherInfo cached)
+        {
+            _logger.LogInformation("Returning cached weather data for city {City}", city);
+            return cached;
+        }
+
         var coords = CityCoordinates.GetCoordinates(city);
         if (coords == null)
         {
@@ -37,25 +48,18 @@ public class OpenMeteoService : IOpenMeteoService
             var data = JsonDocument.Parse(json);
             var current = data.RootElement.GetProperty("current");
 
-            return new WeatherInfo(
+            var weather = new WeatherInfo(
                 City: city,
                 Temperature: current.GetProperty("temperature_2m").GetDouble(),
                 WindSpeed: current.GetProperty("wind_speed_10m").GetDouble()
             );
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "HTTP request failed for city {City} at URL {Url}", city, url);
-            throw;
-        }
-        catch (JsonException ex)
-        {
-            _logger.LogError(ex, "JSON parsing failed for weather data for city {City}.", city);
-            throw;
+
+            _cache.Set(cacheKey, weather, TimeSpan.FromMinutes(10));
+            return weather;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error occurred while fetching weather data for city {City}.", city);
+            _logger.LogError(ex, "Error fetching weather data for city {City}", city);
             throw;
         }
     }
