@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregator.Core", "src\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregator.Infrastructure", "src\ApiAggregator.Infrastructure\ApiAggregator.Infrastructure.csproj", "{EAF82864-BBE4-8F96-958A-488E51067694}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregator.Tests", "tests\ApiAggregator.Tests\ApiAggregator.Tests.csproj", "{3579A093-3127-0178-AD5C-20A1F2058904}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{EAF82864-BBE4-8F96-958A-488E51067694}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAF82864-BBE4-8F96-958A-488E51067694}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAF82864-BBE4-8F96-958A-488E51067694}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3579A093-3127-0178-AD5C-20A1F2058904}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3579A093-3127-0178-AD5C-20A1F2058904}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3579A093-3127-0178-AD5C-20A1F2058904}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3579A093-3127-0178-AD5C-20A1F2058904}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
