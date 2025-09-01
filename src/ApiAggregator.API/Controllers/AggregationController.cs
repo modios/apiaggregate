@@ -1,7 +1,10 @@
-﻿using ApiAggregator.Core.DTOs;
+﻿using ApiAggregator.API.Constants;
+using ApiAggregator.Core.DTOs;
 using ApiAggregator.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
+[EnableRateLimiting(RateLimitingPolicies.FixedPolicy)]
 [ApiController]
 [Route("api/[controller]")]
 public class AggregationController : ControllerBase
