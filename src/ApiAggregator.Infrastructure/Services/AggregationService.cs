@@ -1,4 +1,5 @@
 ﻿using ApiAggregator.Core.DTOs;
+using ApiAggregator.Core.Enums;
 using ApiAggregator.Core.Interfaces;
 
 public class AggregationService : IAggregationService
@@ -25,45 +26,59 @@ public class AggregationService : IAggregationService
 
         await Task.WhenAll(weatherTask, newsTask, countryTask);
 
-        var items = new List<AggregatedItem>
+        var items = BuildAggregatedItems(weatherTask.Result, newsTask.Result, countryTask.Result);
+        var filtered = FilterItems(items, request.Category);
+        var sorted = SortItems(filtered, request.SortBy, request.SortOrder);
+
+        return new AggregatedResponse(sorted);
+    }
+
+    private List<AggregatedItem> BuildAggregatedItems(
+        WeatherInfo weather,
+        HackerNewsItem news,
+        WorldBankCountry country)
+    {
+        return new List<AggregatedItem>
         {
             new AggregatedItem
             {
-                Source = "Weather",
-                Category = weatherTask.Result.Category,
-                Date = weatherTask.Result.Timestamp,
-                RawData = weatherTask.Result
+                Source = Category.Weather.ToString(),
+                Category = weather.Category,
+                Date = weather.Timestamp,
+                RawData = weather
             },
             new AggregatedItem
             {
-                Source = "HackerNews",
-                Category = newsTask.Result.Category,
-                Date = newsTask.Result.CreatedAt,
-                RawData = newsTask.Result
+                Source = Category.HackerNews.ToString(),
+                Category = news.Category,
+                Date = news.CreatedAt,
+                RawData = news
             },
             new AggregatedItem
             {
-                Source = "WorldBank",
-                Category = countryTask.Result.Category,
-                Date = countryTask.Result.LastUpdated,
-                RawData = countryTask.Result
+                Source = Category.WorldBank.ToString(),
+                Category = country.Category,
+                Date = country.LastUpdated,
+                RawData = country
             }
         };
+    }
 
-        // Filtering
-        List<AggregatedItem> filtered = items
-            .Where(i => string.IsNullOrEmpty(request.Category) || i.Category == request.Category)
+    private List<AggregatedItem> FilterItems(List<AggregatedItem> items, Category? category)
+    {
+        return items
+            .Where(i => !category.HasValue || i.Category == category.Value)
             .ToList();
+    }
 
-        // Sorting
-        filtered = request.SortBy?.ToLower() switch
+    private List<AggregatedItem> SortItems(List<AggregatedItem> items, SortBy? sortBy, SortOrder sortOrder)
+    {
+        return sortBy switch
         {
-            "date" => request.SortOrder == "desc"
-                ? filtered.OrderByDescending(i => i.Date).ToList()
-                : filtered.OrderBy(i => i.Date).ToList(),
-            _ => filtered
+            SortBy.Date => sortOrder == SortOrder.Desc
+                ? items.OrderByDescending(i => i.Date).ToList()
+                : items.OrderBy(i => i.Date).ToList(),
+            _ => items
         };
-
-        return new AggregatedResponse(filtered);
     }
 }

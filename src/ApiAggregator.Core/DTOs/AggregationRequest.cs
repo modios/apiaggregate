@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ApiAggregator.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiAggregator.Core.DTOs;
 public record AggregationRequest
@@ -12,7 +13,8 @@ public record AggregationRequest
     [Required(ErrorMessage = "HackerNewsItemId is required.")]
     public int HackerNewsItemId { get; set; }
 
-    public string? Category { get; set; }
-    public string? SortBy { get; set; } // "date"
-    public string SortOrder { get; set; } = "asc"; // "asc" or "desc"
+    public Category? Category { get; set; }
+    public SortBy? SortBy { get; set; }
+    public SortOrder SortOrder { get; set; } = SortOrder.Asc;
+
 }

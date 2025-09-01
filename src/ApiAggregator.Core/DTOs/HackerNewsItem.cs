@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using ApiAggregator.Core.Enums;
+using System.Text.Json.Serialization;
 
 namespace ApiAggregator.Core.DTOs;
 
@@ -12,5 +13,5 @@ public record HackerNewsItem
     [JsonPropertyName("type")] public string? Type { get; set; }
 
     public DateTime CreatedAt => DateTimeOffset.FromUnixTimeSeconds(Time).DateTime.ToUniversalTime();
-    public string Category => "Comment";
+    public Category Category => Category.HackerNews;
 }

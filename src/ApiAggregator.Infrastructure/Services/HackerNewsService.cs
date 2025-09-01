@@ -1,6 +1,5 @@
 ﻿using ApiAggregator.Core.DTOs;
 using ApiAggregator.Core.Interfaces;
-using System.Net.Http;
 using System.Text.Json;
 
 public class HackerNewsService : IHackerNewsService
@@ -13,16 +12,18 @@ public class HackerNewsService : IHackerNewsService
         _httpClient = httpClient;
     }
 
-    public async Task<HackerNewsItem?> GetItemByIdAsync(int id)
+    public async Task<HackerNewsItem> GetItemByIdAsync(int id)
     {
         var url = $"{BaseUrl}/item/{id}.json";
         var response = await _httpClient.GetAsync(url);
-
-        if (!response.IsSuccessStatusCode)
-            return null;
+        response.EnsureSuccessStatusCode();
 
         string rawJson = await response.Content.ReadAsStringAsync();
         var item = JsonSerializer.Deserialize<HackerNewsItem>(rawJson);
+
+        if (item == null)
+            throw new InvalidOperationException($"Item with id {id} not found or could not be deserialized.");
+
         return item;
     }
 }

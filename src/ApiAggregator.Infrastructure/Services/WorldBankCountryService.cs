@@ -11,7 +11,7 @@ public class WorldBankCountryService : IWorldBankCountryService
         _httpClient = httpClient;
     }
 
-    public async Task<WorldBankCountry?> GetCountryAsync(string iso2Code)
+    public async Task<WorldBankCountry> GetCountryAsync(string iso2Code)
     {
         var url = $"https://api.worldbank.org/v2/country/{iso2Code}?format=json";
         var response = await _httpClient.GetAsync(url);
