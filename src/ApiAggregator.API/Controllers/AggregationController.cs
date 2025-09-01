@@ -10,10 +10,12 @@ using Microsoft.AspNetCore.RateLimiting;
 public class AggregationController : ControllerBase
 {
     private readonly IAggregationService _aggregationService;
+    private readonly ILogger<AggregationController> _logger;
 
-    public AggregationController(IAggregationService aggregationService)
+    public AggregationController(IAggregationService aggregationService, ILogger<AggregationController> logger)
     {
         _aggregationService = aggregationService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -29,7 +31,25 @@ public class AggregationController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.City) || string.IsNullOrWhiteSpace(request.CountryCode))
             return BadRequest("City and countryCode are required.");
 
-        var result = await _aggregationService.GetAggregatedDataAsync(request);
-        return Ok(result);
+        try
+        {
+            var result = await _aggregationService.GetAggregatedDataAsync(request);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Invalid input for aggregation request: {@Request}", request);
+            return BadRequest(ex.Message);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "External API call failed during aggregation for request: {@Request}", request);
+            return StatusCode(503, "One or more external services are unavailable.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error during aggregation for request: {@Request}", request);
+            return StatusCode(500, "An unexpected error occurred while processing your request.");
+        }
     }
 }
