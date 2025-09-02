@@ -1,0 +1,15 @@
+
+### Login to get JWT
+POST https://localhost:7145/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "none"
+}
+
+### Try aggregation
+
+### Call Aggregation endpoint with token
+GET https://localhost:7145/api/Aggregation?City=Athens&CountryCode=GR&HackerNewsItemId=12313
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVzdHVzZXIiLCJqdGkiOiI1OGQzZDFhZC1hYWFmLTQyN2QtODdiZC0wN2Q5MGE5ZDc5YWUiLCJleHAiOjE3NTY4MTE2OTEsImlzcyI6IkFwaUFnZ3JlZ2F0b3JJc3N1ZXIiLCJhdWQiOiJBcGlBZ2dyZWdhdG9yQXVkaWVuY2UifQ.-19VVc41uDwEQStG2IVN2kvY9fe1Jw1jqRJZLYYv0_M
