@@ -1,15 +1,21 @@
 ```markdown
 # 🌐 Aggregated Insights API
 
-This ASP.NET Core Web API aggregates data from three external sources — weather, tech news, and global country metadata — into a single unified response. It’s designed for fast, parallel data fetching, clean JSON output, and now includes sorting and filtering options for enhanced control.
+An ASP.NET Core Web API that aggregates data from three external sources — weather, tech news,
+and global country metadata — into a single unified response. Designed for fast, parallel data fetching,
+clean JSON output, and enhanced control via sorting, filtering, authentication, and rate limiting.
 
 ---
 
 ## 🚀 Features
 
-- 🌤 **Weather Data** from [Open-Meteo](https://open-meteo.com/)
-- 📰 **Tech News Item** from [Hacker News API](https://github.com/HackerNews/API)
-- 🌍 **Country Metadata** from [World Bank API](https://datahelpdesk.worldbank.org/knowledgebase/articles/898590-api-country-queries)
+- 🌤 **Weather Data** from Open-Meteo
+- 📰 **Tech News Item** from Hacker News API
+- 🌍 **Country Metadata** from World Bank API
+- 🔐 **JWT Authentication** for secure access
+- 📊 **Request Performance Monitoring** via custom middleware
+- ⏱️ **Rate Limiting** per IP using ASP.NET Core's built-in limiter
+- 📈 **Logging** with Serilog (console + rolling file logs)
 
 ---
 
@@ -21,21 +27,21 @@ Retrieves weather info, a Hacker News item, and country metadata in one call.
 
 #### 🔧 Query Parameters
 
-| Name               | Type   | Required | Description                                                                 |
-|--------------------|--------|----------|-----------------------------------------------------------------------------|
-| `city`             | string | ✅       | City name for weather lookup                                               |
-| `hackerNewsItemId` | int    | ✅       | Hacker News item ID                                                        |
-| `countryCode`      | string | ✅       | ISO 2-letter country code (e.g. `GR`)                                      |
-| `sortBy`           | string | ❌       | Optional. Sort response by `date`                                          |
-| `sortOrder`        | string | ❌       | Optional. Sort direction: asc or desc                                      |
-| `filterBy`         | string | ❌       | Optional. Filter response by Category : Environment, Comment, Economy      |
+| Name               | Type     | Required | Description                                                                 |
+|--------------------|----------|----------|-----------------------------------------------------------------------------|
+| `city`             | string   | ✅       | City name for weather lookup                                               |
+| `hackerNewsItemId` | int      | ✅       | Hacker News item ID                                                        |
+| `countryCode`      | string   | ✅       | ISO 2-letter country code (e.g. `GR`)                                      |
+| `sortBy`           | enum     | ❌       | Optional. Sort response by `Date`                                          |
+| `sortOrder`        | enum     | ❌       | Optional. Sort direction: `Asc` or `Desc`                                  |
+| `category`         | enum     | ❌       | Optional. Filter response by category: `Weather`, `HackerNews`, `WorldBank` |
 
 ---
 
 ### 📘 Example Request
 
 ```http
-GET  https://localhost:7145/api/Aggregation?City=Athens&CountryCode=GR&HackerNewsItemId=1312&Category=Comment
+GET https://localhost:7145/api/Aggregation?City=Athens&CountryCode=GR&HackerNewsItemId=1312&Category=HackerNews
 ```
 
 ---
@@ -47,20 +53,85 @@ GET  https://localhost:7145/api/Aggregation?City=Athens&CountryCode=GR&HackerNew
   "items": [
     {
       "source": "HackerNews",
-      "category": "Comment",
+      "category": "HackerNews",
       "date": "2007-02-27T01:48:57Z",
       "rawData": {
         "by": "Alex3917",
         "id": 1312,
         "parent": 1245,
-        "text": "In theory couldn&#39;t one ban any OpenID below a certain pagerank? For example, my OpenID is embedded on my homepage, which has a pagerank of 6. So then could I create a Reddit clone and ban anyone with an OpenID coming from a site with a pagerank of below 4? You would probably have to accept only OpenID&#39;s from the header of index.html, and check to make sure there was only one OpenID per page. That way if you got banned for trolling then you&#39;d have to make a new homepage and get it up to a certain pagerank before you could make a new account at the site.",
+        "text": "...",
         "time": 1172548137,
         "type": "comment",
         "createdAt": "2007-02-27T01:48:57Z",
-        "category": "Comment"
+        "category": "HackerNews"
       }
     }
   ]
+}
+```
+
+---
+
+## 🔐 Authentication
+
+This API uses **JWT Bearer Tokens** for authentication.
+
+### 🔑 Login Endpoint
+
+```http
+POST /api/Auth/login
+```
+
+#### Request Body
+
+```json
+{
+  "username": "your-username",
+  "password": "your-password"
+}
+```
+
+> ⚠️ Note: Password validation is currently simulated. Replace with real user authentication logic in production.
+
+#### Response
+
+```json
+{
+  "token": "your-jwt-token"
+}
+```
+
+Use this token in the `Authorization` header for authenticated requests:
+
+```
+Authorization: Bearer your-jwt-token
+```
+
+---
+
+## ⏱️ Rate Limiting
+
+- **Policy**: Fixed window
+- **Limit**: 10 requests per minute per IP
+- **Queue**: Up to 5 requests
+- Applied via `[EnableRateLimiting]` on controllers
+
+---
+
+## 📊 Request Stats
+
+### `GET /api/Stats`
+
+Returns average execution time per endpoint.
+
+#### Example Response
+
+```json
+{
+  "/api/Aggregation": {
+    "averageDurationMs": 123.45,
+    "requestCount": 10
+  }
 }
 ```
 
@@ -72,13 +143,14 @@ GET  https://localhost:7145/api/Aggregation?City=Athens&CountryCode=GR&HackerNew
 - `HackerNewsService` → Retrieves a single Hacker News item by ID
 - `WorldBankCountryService` → Fetches country metadata by ISO code
 - `AggregationService` → Combines all three into a single response, applies sort/filter logic
-- `AggregationController` → Exposes the `/api/Aggregation` endpoint
+- `RequestStatsMiddleware` → Measures and stores request durations
+- `PerformanceAnalyzerService` → Background service for performance monitoring
+- `JwtTokenService` → Generates JWT tokens
+- `IRequestStatsStore` → In-memory store for request metrics
 
 ---
 
 ## 🛠️ Running the Project in Visual Studio
-
-To run the API locally:
 
 1. Open the solution in **Visual Studio**.
 2. Build and run the project.
@@ -91,3 +163,31 @@ https://localhost:7145/swagger/index.html
 > 💡 The Swagger interface provides a convenient way to interact with the `/api/Aggregation` endpoint and view live responses.
 
 ---
+
+## 📁 Folder Structure (Simplified)
+
+```
+ApiAggregator/
+├── API/
+│   ├── Controllers/
+│   ├── Middleware/
+│   └── Constants/
+├── Core/
+│   ├── DTOs/
+│   ├── Interfaces/
+│   ├── Models/
+│   └── Enums/
+├── Infrastructure/
+│   ├── Services/
+│   └── Monitoring/
+```
+
+---
+
+## 🧪 Testing
+
+Unit tests are written using **xUnit** and **Moq**. To run tests:
+
+```bash
+dotnet test
+```
