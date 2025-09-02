@@ -28,8 +28,8 @@ public class AggregationController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<AggregatedResponse>> GetAggregated([FromQuery] AggregationRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.City) || string.IsNullOrWhiteSpace(request.CountryCode))
-            return BadRequest("City and countryCode are required.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
         try
         {

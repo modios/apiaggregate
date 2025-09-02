@@ -30,6 +30,7 @@ builder.Services.AddHttpClient<IHackerNewsService, HackerNewsService>().AddPolic
 builder.Services.AddHttpClient<IWorldBankCountryService, WorldBankCountryService>().AddPolicyHandler(resiliencePolicy);
 builder.Services.AddScoped<IAggregationService, AggregationService>();
 builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IRequestStatsStore, InMemoryRequestStatsStore>();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -48,7 +49,6 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -61,4 +61,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<RequestStatsMiddleware>();
+
 app.Run();
+
