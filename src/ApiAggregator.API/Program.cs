@@ -3,6 +3,7 @@ using ApiAggregator.API.Policies;
 using ApiAggregator.Core.Interfaces;
 using ApiAggregator.Core.Models;
 using ApiAggregator.Infrastructure.Services;
+using ApiAggregator.Infrastructure.Services.Monitoring;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -38,6 +39,7 @@ builder.Services.AddHttpClient<IWorldBankCountryService, WorldBankCountryService
 builder.Services.AddScoped<IAggregationService, AggregationService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IRequestStatsStore, InMemoryRequestStatsStore>();
+builder.Services.AddHostedService<PerformanceAnalyzerService>();
 
 // Bind Jwt settings from appsettings.json
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
